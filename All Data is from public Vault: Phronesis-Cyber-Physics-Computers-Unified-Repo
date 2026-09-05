@@ -1,0 +1,544 @@
+All Data is from public Vault: Phronesis-Cyber-Physics-Computers-Unified-Repo and added here as one string
+
+IP Notice — Bio/Neuro Scope
+This material extends Mint-to Logic™ and Phronesis Cyber Physics™ to biological and neurosystem embodiments.
+The same governed substrate (A–E) applies to biosignal pipelines, BCIs, neuroprosthetics, and assistive systems.
+
+Cross-substrate claim: digital, physical, biological.
+Functionally equivalent “governance packs,” consent-receipt schemes, EOS mechanisms, and purpose/flow enforcement require a license.
+This is exploratory prior art; no clinical parameters are disclosed.
+Owner: Spencer D. Southern — all rights reserved. Example Pack — Biosignal Pipeline (Minimal Governance)
+Purpose: Non-clinical biosignal exploration (education).
+
+Consent: single-session; auto-expire; Consent receipts.
+Lifecycle: only AcquireSignal/AnalyzeIntent; no Actuate or Stimulus.
+RBGA: artifact_spike → Limbo; EOS available.
+Evidence: pseudonymous subject_id; time anchors; minimal retention.
+Purpose/Flow: data remains local; no external egress by default.
+Shepherd: optional single-gate for educator oversight.
+Fit: classrooms, hobby exploration, demos (non-therapeutic). Licensing Note (Protocol Packs)
+Protocol Packs are licensed content under the Digital Wisdom™ / Mint-to Logic™ / PCP IP family.
+Not open source; redistribution or derivative “governance packs” requires a license.
+Cross-substrate coverage: digital, physical, biological systems.
+Functionally equivalent implementations trigger licensing, regardless of component names or substrate swaps.
+Contact: Spencer D. Southern — licensing@ (placeholder) Buyer’s Guide — Choosing Protocol Packs by Purpose
+Purpose	Recommended Pack	Governance Intensity	Typical Add-Ons
+Education/Sandbox	AI-Sandbox (Near-Zero)	Low	Tutor persona, public datasets
+Payments/Risk	Mint-Unit Validation	Very High	KYC plugins, redaction packs
+Clinical/PHI	Clinical-PHI	Very High	PHI redactors, HIPAA mapping
+Industrial Safety	Robotics-Safety	High	Zone maps, tool interlocks
+Research/Open	Research-Open	Medium	Export-control fences
+Quantum Sim	Quantum-RiskSim	Medium-High	Device attestors, cost caps
+Rule of thumb: If the action can harm people, money, or law, choose High or Very High governance and require dual human gates. Example Pack — Quantum-RiskSim
+Purpose: Bounded-cost risk simulations with attested results.
+
+Lifecycle: Access → Code; QPU error spike → Limbo; dual-gate to proceed.
+RBGA: error_rate > threshold → auto-rerun or classical fallback; budget cap enforced.
+Evidence: measurement receipts with device attestation + time anchors.
+Purpose/Flow: circuits restricted to approved classes; results remain in domain.
+Shepherd: RiskOwner + Controller approval to release results.
+Fit: finance labs, insurance modeling, research with audit needs. Example Pack — Robotics-Safety (Industrial)
+Purpose: Safe operation inside fenced zones.
+
+Lifecycle: per-transition receipts; E-stop → Burn with incident bundle.
+RBGA: hazard signal (lidar/vision/floor sensor) → Limbo in ≤10 ms; zone breach → Burn.
+Evidence: trajectory + sensor digests; monotonic RTC + anchor.
+Purpose/Flow: actuator interlocks; geofence; tool whitelist only.
+Shepherd: supervisor gate to exit Limbo; two-person gate to re-arm.
+Fit: factories, warehouses, labs. 
+---
+
+### `packs/examples/ai/AI_Sandbox.pack.md`
+```markdown
+# Example Pack — AI-Sandbox (Near-Zero)
+**Purpose:** Creative exploration with safe egress.
+
+- Lifecycle: receipts on Access/Code/Limbo/Burn; Limbo on PII/unsafe output.  
+- RBGA: confidence_drop > 0.35 → Limbo; tool_misuse → Burn.  
+- Evidence: prompt/tool/output receipts; monotonic time + roughtime anchor.  
+- Purpose/Flow: no external egress by default; allowlist per session.  
+- Shepherd: optional single-gate for external share.
+
+**Fit:** education, ideation, non-regulated teams. Example Pack — Neuroprosthetics Safety (Assistive/Clinical)
+Purpose: Safety-critical assistive control under clinician oversight.
+
+Consent: continuous; withdrawal forces Burn + de-arm receipts.
+Lifecycle: actions include Actuate; EOS path available at all times.
+RBGA: unexpected_actuation or signal_saturation → immediate Limbo; repeated breach → Burn with incident evidence.
+Evidence: trajectory/actuation digests; device attestations; monotonic time chain.
+Purpose/Flow: actuator whitelist; geofences; zero third-party analytics.
+Shepherd: dual gate to re-arm after Limbo (Clinician + SafetyOfficer).
+Fit: clinical/rehab settings, high-assurance assistive devices. 
+---
+
+### `packs/examples/neuro/BCI_Research_Consent.pack.md`
+```markdown
+# Example Pack — BCI Research (Consent-First)
+**Purpose:** Non-therapeutic research with human subject protections.
+
+- **Consent:** required; Consent-Grant/Withdraw receipts; sessions auto-expire.  
+- **Lifecycle:** Access→Code; AcquireSignal/AnalyzeIntent actions emit receipts; any hazard → Limbo.  
+- **RBGA:** artifact_spike or geo_boundary_breach → Limbo (≤10 ms); unexpected_actuation → Burn + incident bundle.  
+- **Evidence:** pseudonymous subject_id; firmware/model/config hashes; monotonic time + external anchors; PHI minimization.  
+- **Purpose/Flow:** no external egress; data stays in research domain; redacted exports require dual gate.  
+- **Shepherd:** StimulusGate requires Clinician + SafetyOfficer approval.
+ Protocol Pack Manifest — Neuro/Bio Extension (Public, Implementation-Neutral)
+pack:
+  name: string
+  version: semver
+  publisher: DID/URI
+  signature: detached_signature
+
+warrant:
+  purpose: ["clinical","research","assistive","rehab","education"]
+  subject_id: pseudonymous_id  # PHI never embedded directly
+  roles:
+    - role: "Clinician" | "SafetyOfficer" | "DataSteward" | "Guardian" | "Operator"
+      authz: [capability...]
+
+consent:                # Bio-first extension
+  required: true
+  modes: ["grant","withdraw","expire"]
+  evidences: ["signed_form","digital_approval","guardian_attest"]
+  receipts: ["Consent-Grant","Consent-Withdraw","Consent-Expire"]
+
+lifecycle:              # A
+  states: ["Access","Code","Limbo","Burn"]
+  actions:
+    - name: "AcquireSignal" | "AnalyzeIntent" | "DeliverStimulus" | "Actuate"
+  receipts:
+    format: CBOR+COSE | JSON+JOSE
+    fields: [actor, role, domain, device_id, code_hash, config_hash, action, state, prev_hash, monotonic_counter, time_anchor, evidence]
+  transitions:
+    - from: Code
+      to: Limbo
+      conditions: [rbga.hazard == true]
+      receipt: required
+    - from: any
+      to: Burn
+      conditions: [eos.triggered == true]
+      receipt: required
+
+rbga:                   # B
+  hazards:
+    - name: "signal_saturation" | "artifact_spike" | "unexpected_actuation" | "geo_boundary_breach"
+      source: runtime_telemetry
+      action: "pause" | "reroute" | "burn"
+      srt: "max_reaction_ms"
+  eos:
+    trigger: "hardware_button|dual_approval|telemetry_rule"
+    require_incident_bundle: true
+
+evidence:               # C
+  bind:
+    identity: [subject_id, device_id, operator_id]
+    measurement: [firmware_hash, model_hash, config_hash]
+    time: [monotonic_counter, external_anchor]
+  retention: "duration_policy"
+  redaction: "phi_minimization_policy"
+  chain_of_custody: true
+
+purpose_flow:           # D
+  domains:
+    - id: "therapy" | "research" | "assistive"
+  policy:
+    allow:
+      - domain: "therapy"
+        sensors: [ids]
+        actuators: [ids]
+        data_egress: []
+    deny:
+      - domain: "*"
+        data_egress: ["public","third_party_analytics"]
+
+shepherd:               # E
+  checkpoints:
+    - name: "StimulusGate"
+      quorum: 2
+      roles: ["Clinician","SafetyOfficer"]
+      block_until: approved
+  review_loop: ["assess","plan","act","review","reflect","correct"]
+
+compatibility:
+  substrate: ["biosignal_pipeline","bci","neuroprosthetic","assistive_device"]
+  ledger_api: version
+  min_time_guarantee: "monotonic+anchor"
+  non_negotiables: ["EOS","Consent","ReceiptSigning","AuditReplay"] Protocol Pack Manifest — Public Schema (Implementation-Neutral)
+pack:
+  name: string
+  version: semver
+  publisher: DID/URI
+  signature: detached_signature  # Pack-signing key
+
+warrant:
+  purpose: enum|string
+  roles:
+    - name: string
+      privileges: [capability...]
+  declared_flows:
+    allowed_edges: [ "domainA->domainB", ... ]
+    denied_edges:  [ ... ]
+
+lifecycle:  # A
+  states: ["Access","Code","Limbo","Burn"]
+  receipts:
+    format: CBOR+COSE | JSON+JOSE
+    fields: [actor, domain, code_hash, config_hash, state, prev_hash, monotonic_counter, time_anchor, evidence]
+  transitions:
+    - from: Access
+      to: Code
+      conditions: [...]
+      receipt: required
+    - from: Code
+      to: Limbo
+      conditions: [rbga.signal >= threshold]
+      receipt: required
+    - from: Limbo
+      to: Code
+      conditions: [shepherd.approved == true]
+      receipt: required
+    - from: any
+      to: Burn
+      conditions: [violation.critical == true]
+      receipt: required
+
+rbga:  # B
+  signals:
+    - name: confidence_drop | hazard | qpu_error_rate | pii_detected | policy_violation
+      source: runtime_telemetry
+      threshold: numeric|string
+      action: pause|reroute|burn
+      srt: "max_reaction_ms"  # service reaction time
+
+evidence:  # C
+  time:
+    monotonic: required
+    anchors: [nts|roughtime|gps|tpm_counter]
+  bind:
+    identity: required
+    measurement: code_hash|model_hash|circuit_digest
+    scope: domain_id|device_id
+  retention: "duration"
+  redaction: policy
+
+purpose_flow:  # D
+  domains:
+    - id: string
+      description: string
+  policy:
+    allow:
+      - domain: id
+        tools: [ids]
+        data: [datasets]
+        egress: [endpoints]
+    deny:
+      - ...
+
+shepherd:  # E
+  checkpoints:
+    - name: "HighImpactAction"
+      quorum: 2
+      roles: ["RiskOwner","Controller"]
+      block_until: approved
+
+compatibility:
+  substrate: ["cpu","gpu","qpu","agent","robot"]
+  min_time_guarantee: "monotonic+anchor"
+  ledger_api: version
+
+revocation:
+  crl_uri: uri
+  ocsp_uri: uri
+  revoke_key: DID/URI
+
+Executive Overview
+Thesis: PCP is a governed compute substrate. Programs don’t just “run”—they operate inside environmental law (identity, time, purpose, flow) with lifecycle receipts and runtime authority.
+
+Core Invariants (A–E)
+A. Lifecycle + Receipts: Access → Code → Limbo → Burn (cryptographic receipts per transition)
+B. Runtime Authority: RBGA™ can pause/reroute/burn mid-execution on live telemetry
+C. Identity/Time/Provenance: every action bound to actor, measured code/config, monotonic time
+D. Purpose/Flow Governance: domain-level constraints enforced during execution
+E. Human Checkpoints: protocol-enforced adjudication (Shepherd’s Method™)
+
+Why it wins
+Reliability > raw speed: governed outcomes you can audit beat faster guesses you can’t.
+Compliance by design: receipts are evidence, not best-effort logs.
+Form-factor freedom: Pocket → Desktop → Black Box → Cybernetics/Robotics.
+Products
+Pocket AI™ (portable), Desktop AI™ (home/office), Black Box™ (stackable), Governed Smart Cells™ (substrate), Cybernetics/Robotics (embodiments).
+See: 02_PCP_Computer_Architecture.md PCP Computer Architecture (Public Doctrine)
+Substrate
+Governed Smart Cells™: root of trust, secure/monotonic time, receipt engine, preemptive control path.
+Phronesis Kernel: Identity/Scope Manager, Lifecycle Orchestrator (Mint-to Logic™), RBGA™, Chrono-Synaptic Memory Ledger™, Shepherd’s Interface, Purpose/Flow Plane.
+Execution Model
+Mint-to-Boot: measured boot + initial receipt.
+Access: Warrant declares purpose, tools, flows, human gates → Access receipt.
+Code: task runs under domain constraints; step receipts emitted.
+Supervision: RBGA watches telemetry → Limbo/Reroute/Burn + receipts.
+Human Gate: adjudication required where specified.
+Complete/Burn: final receipts; audit replay from receipts alone.
+Receipt (illustrative, implementation-neutral)
+Fields: actor, domain, code_hash, config_hash, state, prev_hash, monotonic_counter, time_anchor, evidence, signature.
+Chained in an append-only ledger.
+Note: This document is intentionally non-implementation; the kernel internals remain proprietary. See 11_Governance_Kernel_Spec_Skeleton.md. Protocol Packs for AI, Autonomous, 
+and Quantum Systems
+Author: Spencer D. Southern
+IP Family: Digital Wisdom™, Mint-to Logic™, Shepherd’s Method™, RBGA™, Phronesis Cyber Physics™
+Scope: These packs govern behavior, not just hardware. The same PCP invariants (A–E) apply to AI models/agents, autonomous machines, and quantum workloads.
+
+Protective, exploratory prior art. Implementation-neutral. Not open source. Functionally equivalent systems require licensing.
+
+PCP Invariants (A–E) Recap
+A. Lifecycle + Receipts: Access → Code → Limbo → Burn (cryptographic, per-transition receipts)
+B. Runtime Authority: RBGA™ can preemptively pause/reroute/burn mid-execution (policy + telemetry)
+C. Identity/Time/Provenance: every action bound to identity, measured code/config/model, monotonic time
+D. Purpose/Flow Governance: declare & enforce purpose and flow during execution
+E. Human Checkpoints: protocol-enforced adjudication (Shepherd’s Method™)
+
+1) AI Protocol Packs (models, agents, tool-use)
+What they govern
+Model/Agent Warrants: declared purpose, allowed tools/data, risk class, and human gates.
+Prompt/Tool Provenance: bind prompts, tool calls, and outputs to receipts (C).
+Confidence & Drift Policies: RBGA thresholds that auto-Limbo on low confidence, OOD drift, PII leakage, or tool misuse (B).
+Flow Governance: restrict tool calls, data egress, and downstream actions by declared purpose (D).
+Human Gates: require 1–2 person approval for high-impact actions (payments, PHI release, code deploy) (E).
+Example SKUs
+AI-Sandbox (Near-Zero): creative exploration; no external egress without explicit grant.
+AI-Enterprise-Strict: dual-signoff; redaction receipts; tool whitelist only.
+AI-RedTeam: aggressive Limbo on unsafe outputs; auto-burn on policy breach.
+2) Autonomous Protocol Packs (robots, vehicles, cyber-physical)
+What they govern
+Safety Envelope: kinematic/geofence constraints; tool/actuator interlocks (D).
+Runtime Preemption: emergency Limbo from RBGA on hazard telemetry; auto-Burn on critical breaches (B).
+Operator Authority: protocol HITL for arming, escalation, or handover (E).
+Evidence: signed trajectory, sensor, and control receipts with monotonic time (C).
+Example SKUs
+Robotics-Safety (Industrial): hard real-time Limbo/Burn; zone interlocks; E-stop receipts.
+Mobility-Fleet: geo-purpose domains; human dispatch gates; incident bundles.
+3) Quantum Protocol Packs (QPU tasks, hybrid jobs)
+What they govern
+Pre-flight Gating: device attestations, noise budgets, allowable circuits (A,C).
+Live Supervision: telemetry-triggered reruns, fallback to classical, bounded cost windows (B).
+Measurement Receipts: attach device attestations, seeds (if applicable), and time anchors (C).
+Purpose/Flow: restrict circuit classes/observables to declared purpose; no exfil beyond domain (D).
+Human Gates: approval for high-impact results (e.g., cryptographic claims) (E).
+Example SKUs
+Quantum-RiskSim: bounded-cost simulations; auto-rerun on error spikes.
+Quantum-CryptoResearch: strict disclosure gates; notarized measurement receipts.
+Pack Anatomy (applies to AI/Autonomous/Quantum)
+warrant: purpose, authorities, roles, declared flows.
+lifecycle: state rules for Access/Code/Limbo/Burn + per-transition receipts (A).
+rbga: signals/thresholds → actions (pause, reroute, burn) with timing SLAs (B).
+evidence: receipt schema; redaction; retention; external anchors (C).
+purpose_flow: domain graph; allowed tools/datasets/egress by purpose (D).
+shepherd: HITL gates, quorum, escalation (E).
+compatibility: device & runtime constraints; minimum ledger/time guarantees.
+signing: pack signature, publisher, version, revoke key.
+Packs cannot disable PCP non-negotiables: monotonic time, receipt signing, emergency preemption, audit replay.
+
+Lifecycle Receipts (subset)
+Pack-Install / Pack-Swap / Pack-Revoke
+Access / Code / Limbo / Burn
+Gate-Request / Gate-Approve / Gate-Deny
+Tool-Call / Data-Access / Model-Invoke / Measurement-Receipt (QPU)
+Business Model (cross-substrate)
+Protocol Sets as SKUs: monthly per device/tenant; usage tiers by receipts.
+Marketplace: third-party packs (certified); 70/30 split; revocation capability.
+Compliance Editions: packs mapped to HIPAA/PCI/NIST/ISO with auto-evidence.
+IP Notice (summary)
+These packs implement governed execution for AI, autonomous, and quantum systems under Mint-to Logic™ and Phronesis Cyber Physics™. Functionally equivalent packs/markets require a 
+license—across digital, physical, and biological embodiments. Protocol Packs for Neuro/ Bio Systems
+Author: Spencer D. Southern
+IP Family: Digital Wisdom™, Mint-to Logic™, Shepherd’s Method™, RBGA™, Phronesis Cyber Physics™
+Scope: Applies PCP invariants to biological neural networks, neurosystems (BCI, neuroprosthetics), biosignal pipelines, and bio-cyber-physical workflows.
+
+Protective, exploratory prior art. Implementation-neutral; no procedural/clinical parameters disclosed. Not medical advice. License required for functionally equivalent systems.
+
+PCP Invariants (A–E) in Bio Context
+A. Lifecycle + Receipts — Access → Code → Limbo → Burn for any bio-interactive action (e.g., acquire signal, compute intent, deliver stimulus, actuate). Cryptographic receipts per 
+transition.
+B. Runtime Authority (RBGA™) — live supervision over biosignals/telemetry; auto-Limbo/auto-Burn on hazard signals or policy violation.
+C. Identity/Time/Provenance — bind subject/roles/device, measured firmware/model/config, monotonic time, and chain-of-custody for data and actuation.
+D. Purpose/Flow Governance — declare and enforce purpose and permitted flows (e.g., “clinical therapy only; no external egress; no secondary analytics”).
+E. Human Checkpoints (Shepherd’s Method™) — protocol-enforced approvals (e.g., clinician + safety officer) that block execution until satisfied.
+
+Bio-Specific Non-Negotiables
+Consent as First-Class: explicit, revocable Consent receipts (grant/withdraw/expire).
+EOS (Emergency Override Stop): preemptive, fail-safe halt path with evidence bundle.
+Role Separation: Subject / Clinician / Safety Officer / Data Steward are distinct.
+PHI Handling: redaction and purpose-limited export bound in receipts.
+What a Neuro/Bio Pack Governs
+Warrant (purpose), consent model, sensor/actuator allowlists, safety budgets (non-numeric here), roles & quorum for gates, RBGA hazard rules, evidence profile, retention/redaction, 
+domain egress/denial.
+See manifests & examples below. Protocol Packs (Purpose Sets)
+Definition: Signed, versioned governance bundles (.pcp-pack) that define how the same hardware behaves for a given purpose.
+
+Contents
+Lifecycle policy (A), RBGA thresholds/actions (B), evidence profile + time guarantees (C), domain purpose/flow graph (D), Shepherd’s gates (E), compatibility matrix.
+Non-negotiables
+Packs cannot disable: monotonic time, receipt signing, emergency preemption, audit replay.
+Example SKUs
+Near-Zero: light governance for sandbox/edu.
+Mint-Unit Validation: heavy lifecycle, dual signoff; fraud → Burn.
+Clinical-PHI: HIPAA-mapped receipts + redaction proofs.
+Robotics-Safety: hard real-time Limbo/Burn; geofencing.
+Research-Open: broad tools; export-control fences.
+Pack Lifecycle Receipts
+Pack-Install, Pack-Swap, Pack-Revoke receipts bind identity, version, time, and device. Product Line
+Pocket AI™
+Portable governed computer.
+
+Attach: protocol packs, Evidence Vault sync.
+Target: field ops, education, regulated frontline.
+Desktop AI™
+Home/office wisdom engine.
+
+Attach: accelerators, strict protocol packs, support plans.
+Black Box™
+Stackable lab/edge node (clusterable).
+
+Attach: cluster license, audit storage, RBGA premium policies.
+Governed Smart Cells™
+Atomic compute units (substrate) used across products.
+
+Cybernetics/Robotics
+Brains/bodies governed by PCP invariants (A–E) with hard real-time Limbo/Burn.
+
+this contnues: Live Demo Script — Access → Code → Limbo → Approve → Code → Complete
+Scenario: Approve a $250k vendor payment with AI assist.
+
+Access: Create Warrant (purpose: “vendor payment”), declare tools/data, require 2-person gate. Emit Access receipt.
+Code: AI proposes terms; RBGA sees low confidence on vendor risk → auto-Limbo; emit Limbo receipt.
+Human Gate: Finance lead reviews receipts; approves → emit approval receipt.
+Code: System re-executes with stricter data; passes all checks.
+Complete: Emit completion receipt; show audit replay (chain of receipts).
+Mic-drop: mid-execution pause with receipts + human gate + replayable evidence. Auditor Partner Brief
+What you get
+Receipts, not logs: signed, per-transition artifacts bound to identity, code, config, time.
+Replayability: reconstruct decisions from receipts alone.
+Coverage metrics: Governance Coverage, Verified Outcome Rate, Conformance Latency.
+How you win
+Fewer manual hours; faster attestation; stronger assurance.
+Integration
+Export to your evidence systems; receipt schemas documented for tool integration.
+Contact: Spencer D. Southern — licensing & auditor partnerships. IP & Unified Notice
+Owner: Spencer D. Southern (Southern Star Pro. Studios L.L.C.)
+
+Prior Art & Filings
+2017 — earliest documented prior art (concept development)
+2024 — initial patent filings
+2025-06-02 — Defensive Disclosure (Center for Open Science), DOI: 10.17605/OSF.IO/WCZX9
+Recognition & Alignment (Not a Call to Build)
+This work is not open source. It is protected under prior art, filings, and the Unified Notice.
+Those persisting in building false systems are subject to licensing enforcement under law, including treble damages. Unknowing adopters will be treated fairly and offered licensing.
+
+Call to License
+Operating inside the governed compute domain defined by Digital Wisdom™, Mint-to Logic™, Shepherd’s Method™, RBGA™, and Phronesis Cyber Physics™ requires a license. Functionally equivalent 
+implementations are covered regardless of component swaps or substrate changes (digital/physical/biological).
+
+Trademarks: Digital Wisdom™, Mint-to Logic™, Shepherd’s Method™, RBGA™, Phronesis Cyber Physics™, Governed Smart Cells™, Pocket AI™, Black Box™, Desktop AI™, Mint-to Logic Cybernetics™, 
+Mint-to Logic Robotics™. Prior Art Timeline (Binding Narrative)
+2017: Conception + early records (observer-driven selection, lifecycle control, authority-layer enforcement).
+2024: Patent filings initiated (digital, physical, biological embodiments).
+2025-06-02: Defensive Disclosure registered (OSF, DOI 10.17605/OSF.IO/WCZX9).
+2025-08 (current): Public doctrine + commercialization repo; no secret sauce disclosed.
+This repo is exploratory and protective; content may evolve as growth requires. Claim Chart Template (Element-by-Element)
+Claim Element	Product Evidence (quote + cite)	My Analysis (Same/Equivalent/Missing)
+A. Lifecycle + Receipts		
+B. Runtime Preemption		
+C. Identity/Time/Prov Binding		
+D. Purpose/Flow Governance		
+E. Human Checkpoints		
+Notes:
+
+One chart per accused product/version.
+Preserve PDFs, version strings, and dates. Governance Kernel — Spec Skeleton (Public, Implementation-Neutral)
+Modules
+Lifecycle Orchestrator: state machine (Access/Code/Limbo/Burn) + receipt hooks.
+RBGA: policy + telemetry subscribers; actions: pause/reroute/burn.
+Identity/Scope: bind actors, code/config, domains.
+Chrono Ledger: monotonic counters + time anchors; append-only chain.
+Shepherd’s Gate: protocol checkpoints, roles, quorum.
+Purpose/Flow Engine: runtime enforcement of allowed flows per domain.
+Interfaces (high-level)
+mint_warrant(), emit_receipt(), preempt(action), request_gate(role/quorum), declare_flow(domain, edges).
+Receipt Schema (illustrative)
+Minimal fields listed in 02_PCP_Computer_Architecture.md; COSE/CBOR recommended for compactness.
+Internal algorithms, data structures, and micro-flows are proprietary. Security & Manufacturing (Public Outline)
+Provisioning
+Device identity in secure element; measured boot; bind receipt keys at factory.
+First boot emits Mint-to-Boot receipt.
+Updates
+Signed protocol packs; versioned and revocable; Pack-Swap receipts.
+Return/Refurbish
+Burn receipts finalize decommission; wipes with evidence chain preserved for audit. 12-Month Roadmap (Public Outline)
+Q1: kernel beta on NUC-class; marketplace alpha; 3 pilots (fin/health/robotics).
+Q2: Pocket/Desktop prototypes; RBGA v1; Chrono ledger v1 with export.
+Q3: Black Box 0.9 cluster; attestation hooks; Evidence Vault GA.
+Q4: GA; third-party pack certification; enterprise licensing.
+
+KPIs: Verified Outcome Rate, Mean Time to Pause, Conformance Latency, Governance Coverage, Audit Replay Fidelity. Bio/Neuro Governance Principles (PCP)
+Human Dignity & Autonomy — consent is explicit, revocable, and logged; EOS always available.
+Least Capability — sensors/actuators/tooling only as required by declared purpose.
+Receipts, Not Logs — cryptographic, per-transition receipts enable replayable accountability.
+Purpose Over Possibility — data/actuation flows are constrained to declared purposes; secondary use requires new warrants + consent.
+Reversible by Design — Limbo pauses are cheap and fast; Burn de-arms safely with evidence.
+Role Separation — Subject, Clinician, Safety Officer, Data Steward are distinct and auditable.
+No Hidden Channels — side-paths and backdoors are denied by the domain policy plane.
+This doctrine is implementation-neutral and does not disclose clinical parameters or procedures. Intellectual Property Notice
+
+All concepts, systems, writings, designs, and related materials created by Spencer Southern are the exclusive intellectual property of Spencer Southern / Southern Star Pro. Studios LLC.
+They are protected under applicable copyright, trade‑secret, and intellectual‑property laws in the United States and internationally.
+No portion of this material may be copied, reproduced, distributed, or used in any form without prior written authorization.
+All rights reserved. # Phronesis Cyber Physics™ Computers — Unified Repo
+
+**Author:** Spencer D. Southern  
+**IP Family:** Digital Wisdom™, Mint-to Logic™, Shepherd’s Method™, RBGA™, Phronesis Cyber Physics™, Governed Smart Cells™  
+**Brands:** Pocket AI™, Black Box™, Desktop AI™, Mint-to Logic Cybernetics™, Mint-to Logic Robotics™
+
+This repo aggregates public doctrine, product overviews, protocol pack specs, licensing posture, demo scripts, and partner briefs for the **Phronesis Cyber Physics (PCP)** governed-compute 
+ecosystem.
+
+> This is a **protective and exploratory record** of prior art and commercialization plans. It is **implementation-neutral** and intentionally omits trade secrets.
+
+- Start here: `01_Executive_Overview.md`
+- Architecture: `02_PCP_Computer_Architecture.md`
+- Protocol Packs: `03_Protocol_Packs.md`
+- Product line: `04_Product_Line.md`
+- Pricing & licensing: `05_Pricing_and_Licensing.md`
+- Sales demo: `06_Sales_Demo_Script.md`
+- Auditor brief: `07_Auditor_Partner_Brief.md`
+- IP & notices: `08_IP_and_Notice.md`
+- Timeline: `09_Prior_Art_Timeline.md`
+- Claim chart template: `10_Claim_Chart_Template.md`
+- Kernel spec skeleton: `11_Governance_Kernel_Spec_Skeleton.md`
+- Secure mfg: `12_Security_and_Manufacturing.md`
+- Roadmap: `13_Roadmap_12_Months.md` The SSPS IP stack, including Mint-to Logic™, The Shepherd’s Method™, and all governing logic, is protected under U.S. and international trade secret 
+and copyright frameworks. Certain elements have been publicly disclosed for continuity and copyright purposes, while core governing logic remains confidential and has never been voluntarily 
+disclosed in a manner that constitutes waiver.
+
+By proceeding, you acknowledge that the materials within this vault are proprietary intellectual property of Spencer Southern / Southern Star Pro. Studios LLC (SSPS™), protected under 
+trade secret, copyright, and sovereign IP law.
+
+Accessing this vault constitutes your agreement to a binding NDA and licensing restriction. You agree not to copy, disclose, reverse-engineer, or distribute any portion of the contents.
+
+This gateway is monitored and time-stamped under Right Hand Protocol™. Violation triggers immediate enforcement.
+
+Phronesis-Cyber-Physics-Computers-Unified-Repo
+This repo aggregates public doctrine, product overviews, protocol pack specs, licensing posture, demo scripts, and partner briefs for the Phronesis Cyber Physics (PCP) governed-compute 
+ecosystem.
+
+⚠️ PROPRIETARY RIGHTS NOTICE All materials contained in this repository are the proprietary property of Southern Star Pro Studios L.L.C. and are protected under United States and 
+international copyright, trade secret, and intellectual property laws.
+
+No license, permission, or right of use is granted by accessing or viewing this repository. Unauthorized copying, reproduction, distribution, modification, reverse‑engineering, or use of 
+any portion of the materials is strictly prohibited without prior written authorization from Southern Star Pro Studios L.L.C.
+
+All rights, titles, and interests in and to the materials remain exclusively with Southern Star Pro Studios L.L.C. Nothing in this repository shall be interpreted as a waiver of any rights
+or remedies 
+available under applicable law.
+
+For licensing or authorized access inquiries, contact: SpencerSouthern12@gmail.com
+
+This repository uses the SSPS continuity framework. Older vaults may contain earlier protection notices; all rights remain reserved under both the original notices and this unified protection standard.
